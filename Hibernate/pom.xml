@@ -9,28 +9,30 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Versión de Spring Boot -->
+        <spring-boot.version>3.0.2</spring-boot.version>
     </properties>
 
     <dependencies>
-        <!-- API de Jakarta EE (Java EE 8 o superior) -->
+        <!-- Spring Boot Starter Web (incluir servidor embebido como Tomcat) -->
         <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>10.0.0</version>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
-        <!-- Hibernate Core -->
+        <!-- Spring Boot Starter Data JPA (para trabajar con Hibernate y JPA) -->
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.3.1.Final</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
-        <!-- H2 Database (para pruebas en memoria) -->
+        <!-- Base de datos en memoria H2 para pruebas -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -38,14 +40,15 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- JDBC API -->
+        <!-- Dependencia de Jakarta EE (para trabajar con JPA y Servlets) -->
         <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>3.1.0</version>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- Jakarta Servlet API (para Servlets) -->
+        <!-- Dependencia de Jakarta Servlet API (para Servlets) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -53,13 +56,44 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Gson para convertir JSON en Servlets -->
+        <!-- Gson para convertir JSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
+
+        <!-- Hibernate Core (para integrar con JPA) -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.3.1.Final</version>
+        </dependency>
+
+        <!-- Spring Boot Starter para empaquetar la aplicación como un archivo ejecutable .jar -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
+        <!-- Dependencia de Spring Boot para manejar el ciclo de vida de la aplicación -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+
     </dependencies>
 
-
+    <build>
+        <plugins>
+            <!-- Plugin de Spring Boot para empaquetar la aplicación como un archivo ejecutable .jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 </project>
