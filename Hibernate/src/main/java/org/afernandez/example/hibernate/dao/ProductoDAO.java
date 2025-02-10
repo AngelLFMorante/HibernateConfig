@@ -1,15 +1,14 @@
 package org.afernandez.example.hibernate.dao;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import org.afernandez.example.hibernate.config.HibernateUtil;
 import org.afernandez.example.hibernate.model.Producto;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-
 import java.util.List;
 
 /**
  * Data Access Object (DAO) para la entidad Producto.
- * Gestiona las operaciones CRUD utilizando Hibernate.
+ * Gestiona las operaciones CRUD utilizando JPA con EntityManager.
  */
 public class ProductoDAO {
 
@@ -19,14 +18,17 @@ public class ProductoDAO {
      * @param producto El producto a guardar.
      */
     public void guardar(Producto producto) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.save(producto);
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.persist(producto);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction.isActive()) transaction.rollback();
             e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -37,8 +39,11 @@ public class ProductoDAO {
      * @return El producto encontrado o null si no existe.
      */
     public Producto obtenerPorId(Long id) {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.get(Producto.class, id);
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        try {
+            return entityManager.find(Producto.class, id);
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -48,8 +53,11 @@ public class ProductoDAO {
      * @return Lista de productos.
      */
     public List<Producto> listarTodos() {
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from Producto", Producto.class).list();
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        try {
+            return entityManager.createQuery("SELECT p FROM Producto p", Producto.class).getResultList();
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -59,14 +67,17 @@ public class ProductoDAO {
      * @param producto El producto con los nuevos datos.
      */
     public void actualizar(Producto producto) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            session.update(producto);
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            entityManager.merge(producto);
             transaction.commit();
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction.isActive()) transaction.rollback();
             e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
     }
 
@@ -76,17 +87,20 @@ public class ProductoDAO {
      * @param id Identificador del producto a eliminar.
      */
     public void eliminar(Long id) {
-        Transaction transaction = null;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            Producto producto = session.get(Producto.class, id);
+        EntityManager entityManager = HibernateUtil.getEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        try {
+            transaction.begin();
+            Producto producto = entityManager.find(Producto.class, id);
             if (producto != null) {
-                session.delete(producto);
+                entityManager.remove(producto);
                 transaction.commit();
             }
         } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
+            if (transaction.isActive()) transaction.rollback();
             e.printStackTrace();
+        } finally {
+            entityManager.close();
         }
     }
 }
